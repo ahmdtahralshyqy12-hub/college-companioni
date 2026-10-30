@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>رفيقي الجامعي (My College Companion) v2.0</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontTajawal Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+        }
+        /* Pulse Animation for Recorder */
+        @keyframes record-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .recording-indicator {
+            animation: record-pulse 1.2s infinite ease-in-out;
+        }
+        /* Hide scrollbars for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- App Lock Overlay (PIN Code) -->
+    <div id="pinOverlay" class="fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md flex flex-col items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-2xl max-w-xs w-full text-center border border-slate-200 dark:border-slate-700">
+            <div class="w-16 h-16 bg-brand-500/10 text-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-1">قفل الخصوصية</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">أدخل رمز PIN المكون من 4 أرقام للمتابعة</p>
+            <div id="pinDots" class="flex justify-center gap-3 mb-6">
+                <span class="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-transparent"></span>
+                <span class="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-transparent"></span>
+                <span class="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-transparent"></span>
+                <span class="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-transparent"></span>
+            </div>
+            <div class="grid grid-cols-3 gap-3 max-w-[200px] mx-auto">
+                <button onclick="app.enterPin('1')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">1</button>
+                <button onclick="app.enterPin('2')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">2</button>
+                <button onclick="app.enterPin('3')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">3</button>
+                <button onclick="app.enterPin('4')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">4</button>
+                <button onclick="app.enterPin('5')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">5</button>
+                <button onclick="app.enterPin('6')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">6</button>
+                <button onclick="app.enterPin('7')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">7</button>
+                <button onclick="app.enterPin('8')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">8</button>
+                <button onclick="app.enterPin('9')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">9</button>
+                <button onclick="app.clearPin()" class="h-12 rounded-xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 font-bold text-xs flex items-center justify-center"><i class="fa-solid fa-trash-can"></i></button>
+                <button onclick="app.enterPin('0')" class="h-12 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold text-lg active:scale-95 transition">0</button>
+                <button onclick="app.backspacePin()" class="h-12 rounded-xl bg-slate-200 dark:bg-slate-600 font-bold flex items-center justify-center text-slate-700 dark:text-slate-200"><i class="fa-solid fa-backspace"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-sky-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/20 font-black text-lg">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-slate-900 dark:text-white text-base leading-tight">رفيقي الجامعي</h1>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">الإصدار 2.0 • Offline-First</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <!-- Global Quick Search Trigger -->
+            <button onclick="app.openModal('searchModal')" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 transition">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            </button>
+            <!-- Notification Bell -->
+            <button onclick="app.openModal('notificationsModal')" class="relative w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 transition">
+                <i class="fa-solid fa-bell text-sm"></i>
+                <span id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center hidden">0</span>
+            </button>
+            <!-- Theme Toggle -->
+            <button onclick="app.toggleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center hover:bg-slate-200 transition">
+                <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 pb-24 overflow-y-auto">
+
+        <!-- TAB 1: Dashboard -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Developer Tag Banner -->
+            <div class="bg-gradient-to-r from-brand-600 via-sky-600 to-indigo-600 rounded-3xl p-5 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute -left-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold mb-2">
+                            <i class="fa-solid fa-certificate text-amber-300"></i> النسخة المعتمدة v2.0
+                        </div>
+                        <h2 class="text-2xl font-black mb-1">أهلاً بك في نظامك الأكاديمي</h2>
+                        <p class="text-xs text-sky-100 max-w-md leading-relaxed">
+                            تطبيق إدارة أكاديمية مستقل بالكامل بدون إنترنت.
+                        </p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20 text-xs text-right">
+                        <div class="text-sky-200 text-[10px]">المطور والمصمم:</div>
+                        <div class="font-bold text-sm text-amber-300"><i class="fa-solid fa-code text-xs ml-1"></i> المهندس / أحمد طاهر السحيقي</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-400 mb-2">
+                        <span class="text-xs font-medium">نسبة الحضور</span>
+                        <i class="fa-solid fa-user-check text-emerald-500"></i>
+                    </div>
+                    <div class="text-2xl font-black text-slate-800 dark:text-white" id="dashAttendanceRate">100%</div>
+                    <p class="text-[10px] text-slate-400 mt-1" id="dashAttendanceSub">0 غيابات مسجلة</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-400 mb-2">
+                        <span class="text-xs font-medium">المهام العاجلة</span>
+                        <i class="fa-solid fa-clock-rotate-left text-amber-500"></i>
+                    </div>
+                    <div class="text-2xl font-black text-slate-800 dark:text-white" id="dashPendingTasks">0</div>
+                    <p class="text-[10px] text-amber-500 mt-1 font-semibold" id="dashUrgentTasks">0 قريبة جداً</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-400 mb-2">
+                        <span class="text-xs font-medium">المعدل التقديري</span>
+                        <i class="fa-solid fa-chart-line text-brand-500"></i>
+                    </div>
+                    <div class="text-2xl font-black text-slate-800 dark:text-white" id="dashGPA">-%</div>
+                    <p class="text-[10px] text-slate-400 mt-1" id="dashGPASub">بناءً على الدرجات</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                    <div class="flex items-center justify-between text-slate-400 mb-2">
+                        <span class="text-xs font-medium">أقرب امتحان</span>
+                        <i class="fa-solid fa-file-pen text-rose-500"></i>
+                    </div>
+                    <div class="text-lg font-bold text-slate-800 dark:text-white truncate" id="dashNextExam">لا يوجد</div>
+                    <p class="text-[10px] text-rose-500 mt-1 font-bold" id="dashExamCountdown">--</p>
+                </div>
+            </div>
+
+            <!-- Early Warning Banner (Alerts) -->
+            <div id="warningBanner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 text-amber-800 dark:text-amber-300 flex items-start gap-3">
+                <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xl mt-0.5"></i>
+                <div class="flex-1 text-xs">
+                    <h4 class="font-bold mb-1">إنذار مبكر وملاحظات هامّة:</h4>
+                    <ul id="warningList" class="list-disc list-inside space-y-1"></ul>
+                </div>
+            </div>
+
+            <!-- Today's Schedule Overview -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-day text-brand-500"></i> محاضرات اليوم (<span id="todayDayName">--</span>)
+                    </h3>
+                    <button onclick="app.switchTab('schedule')" class="text-xs text-brand-500 font-bold hover:underline">عرض الجدول كامل</button>
+                </div>
+                <div id="todayScheduleList" class="space-y-3">
+                    <!-- Dynamic Items -->
+                </div>
+            </div>
+
+            <!-- Quick Media Audio Recorder Widget -->
+            <div class="bg-slate-900 text-white rounded-3xl p-5 shadow-xl relative overflow-hidden">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <h3 class="font-bold text-sm text-slate-100"><i class="fa-solid fa-microphone text-rose-500 ml-1"></i> مسجل الصوت المباشر</h3>
+                        <p class="text-[11px] text-slate-400">سجل المحاضرات الحية واحفظها في المحاضرات مباشرة</p>
+                    </div>
+                    <span id="recordingTimer" class="font-mono text-xl font-bold text-rose-400 hidden">00:00</span>
+                </div>
+                
+                <div id="recorderControls" class="flex items-center gap-3 mt-4">
+                    <button id="btnStartRecord" onclick="app.startAudioRecording()" class="flex-1 py-3 bg-rose-600 hover:bg-rose-700 active:scale-98 text-white rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition shadow-lg shadow-rose-600/30">
+                        <i class="fa-solid fa-circle"></i> بدء التسجيل الصوتي
+                    </button>
+                    <button id="btnStopRecord" onclick="app.stopAudioRecording()" class="hidden flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition">
+                        <i class="fa-solid fa-square"></i> إنهاء وحفظ
+                    </button>
+                </div>
+                <div id="recordingStatus" class="mt-2 text-center text-xs text-rose-400 font-medium hidden">
+                    <span class="inline-block w-2 h-2 rounded-full bg-rose-500 recording-indicator ml-1"></span> جاري التسجيل المباشر للمحاضرة...
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: Subjects -->
+        <section id="tab-subjects" class="tab-content space-y-4 hidden">
+            <div class="flex items-center justify-between gap-2">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-search absolute right-3 top-3 text-slate-400 text-xs"></i>
+                    <input type="text" id="subjectSearch" oninput="app.renderSubjects()" placeholder="بحث في المواد..." class="w-full pr-8 pl-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-brand-500">
+                </div>
+                <button onclick="app.openModal('addSubjectModal')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-plus"></i> مادة جديدة
+                </button>
+            </div>
+
+            <!-- Subjects List -->
+            <div id="subjectsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Rendered Dynamically -->
+            </div>
+        </section>
+
+        <!-- TAB 3: Lectures & Media -->
+        <section id="tab-lectures" class="tab-content space-y-4 hidden">
+            <div class="flex items-center justify-between gap-2">
+                <select id="lectureSubjectFilter" onchange="app.renderLectures()" class="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 font-medium">
+                    <option value="">جميع المواد</option>
+                </select>
+                <button onclick="app.openModal('addLectureModal')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow-md shadow-brand-500/20">
+                    <i class="fa-solid fa-plus"></i> إضافة محاضرة
+                </button>
+            </div>
+
+            <div id="lecturesList" class="space-y-3">
+                <!-- Dynamic Lectures -->
+            </div>
+        </section>
+
+        <!-- TAB 4: Tasks & Activities -->
+        <section id="tab-tasks" class="tab-content space-y-4 hidden">
+            <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 no-scrollbar">
+                <div class="flex gap-1 bg-slate-200 dark:bg-slate-800 p-1 rounded-xl text-xs font-medium">
+                    <button onclick="app.setTaskFilter('all')" class="task-filter-btn px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm" data-filter="all">الكل</button>
+                    <button onclick="app.setTaskFilter('pending')" class="task-filter-btn px-3 py-1.5 rounded-lg" data-filter="pending">القادمة</button>
+                    <button onclick="app.setTaskFilter('urgent')" class="task-filter-btn px-3 py-1.5 rounded-lg text-amber-600" data-filter="urgent">عاجلة (<=3 أيام)</button>
+                    <button onclick="app.setTaskFilter('completed')" class="task-filter-btn px-3 py-1.5 rounded-lg" data-filter="completed">المكتملة</button>
+                </div>
+                <button onclick="app.openModal('addTaskModal')" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 shadow-md shrink-0">
+                    <i class="fa-solid fa-plus"></i> تكليف جديد
+                </button>
+            </div>
+
+            <div id="tasksList" class="space-y-3">
+                <!-- Dynamic Tasks -->
+            </div>
+        </section>
+
+        <!-- TAB 5: Attendance -->
+        <section id="tab-attendance" class="tab-content space-y-4 hidden">
+            <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-sm">تسجيل الحضور اليومي السريع</h3>
+                    <p class="text-[11px] text-slate-400">سجل حضورك أولاً بأول لتفادي الحرمان</p>
+                </div>
+                <button onclick="app.exportAttendanceReport()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs px-3 py-2 rounded-xl font-semibold flex items-center gap-1">
+                    <i class="fa-solid fa-file-export"></i> تصدير تقرير
+                </button>
+            </div>
+
+            <div id="attendanceSubjectsList" class="space-y-4">
+                <!-- Attendance Cards per Subject -->
+            </div>
+        </section>
+
+        <!-- TAB 6: Grades & Assessment -->
+        <section id="tab-grades" class="tab-content space-y-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- GPA Calculator Card -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm md:col-span-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-sm mb-1"><i class="fa-solid fa-calculator text-brand-500 ml-1"></i> حاسبة "ماذا لو" (What-If)</h3>
+                        <p class="text-[11px] text-slate-400 mb-4">احسب الدرجة المتبقية المطلوبة للوصول للتقدير المستهدف</p>
+
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <label class="block text-slate-500 mb-1">الدرجة الحالية الكلية</label>
+                                <input type="number" id="whatIfCurrent" placeholder="مثال: 45" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1">الدرجة المتروكة للاختبار النهائي</label>
+                                <input type="number" id="whatIfMaxFinal" placeholder="مثال: 50" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1">النسبة المستهدفة (%)</label>
+                                <input type="number" id="whatIfTarget" value="85" class="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                            </div>
+                            <button onclick="app.calculateWhatIf()" class="w-full py-2.5 bg-brand-500 text-white rounded-xl font-bold shadow-md shadow-brand-500/20">حساب المطلوبة</button>
+                            <div id="whatIfResult" class="p-3 bg-brand-500/10 rounded-xl text-center font-bold text-brand-600 dark:text-brand-400 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas Visual Graph -->
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm md:col-span-2 flex flex-col">
+                    <h3 class="font-bold text-sm mb-3"><i class="fa-solid fa-chart-simple text-emerald-500 ml-1"></i> الرسم البياني للدرجات حسب المواد</h3>
+                    <div class="flex-1 min-h-[200px] relative flex items-center justify-center">
+                        <canvas id="gradesCanvas" class="w-full h-full max-h-[220px]"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grade Items per Subject -->
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-sm">تفاصيل الدرجات والاختبارات</h3>
+                <button onclick="app.openModal('addGradeModal')" class="bg-brand-500 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 shadow-md">
+                    <i class="fa-solid fa-plus"></i> إضافة تقييم/درجة
+                </button>
+            </div>
+
+            <div id="gradesList" class="space-y-4">
+                <!-- Dynamic Grades -->
+            </div>
+        </section>
+
+        <!-- TAB 7: Schedule & Exams -->
+        <section id="tab-schedule" class="tab-content space-y-6 hidden">
+            <!-- Weekly Schedule -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-calendar-week text-brand-500 ml-1"></i> الجدول الأسبوعي للمحاضرات</h3>
+                    <button onclick="app.openModal('addScheduleModal')" class="bg-brand-500 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 shadow-md">
+                        <i class="fa-solid fa-plus"></i> حصة بالجدول
+                    </button>
+                </div>
+                <div id="weeklyScheduleGrid" class="grid grid-cols-1 md:grid-cols-7 gap-3">
+                    <!-- Days Saturday to Friday -->
+                </div>
+            </div>
+
+            <!-- Exams Countdown Schedule -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-sm"><i class="fa-solid fa-stopwatch text-rose-500 ml-1"></i> جدول الامتحانات والعد التنازلي</h3>
+                    <button onclick="app.openModal('addExamModal')" class="bg-rose-500 text-white text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1 shadow-md shadow-rose-500/20">
+                        <i class="fa-solid fa-plus"></i> امتحان جديد
+                    </button>
+                </div>
+                <div id="examsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <!-- Dynamic Exams -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 8: Settings & Backup -->
+        <section id="tab-settings" class="tab-content space-y-6 hidden">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-4">
+                <h3 class="font-bold text-sm border-b pb-2 border-slate-100 dark:border-slate-700"><i class="fa-solid fa-sliders text-brand-500 ml-1"></i> إعدادات المظهر والخصوصية</h3>
+                
+                <div class="flex items-center justify-between py-2">
+                    <div>
+                        <div class="text-xs font-bold">الوضع الليلي (Dark Mode)</div>
+                        <div class="text-[10px] text-slate-400">تغيير المظهر يدوي أو تلقائي</div>
+                    </div>
+                    <button onclick="app.toggleTheme()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-xl">تبديل</button>
+                </div>
+
+                <div class="flex items-center justify-between py-2 border-t border-slate-100 dark:border-slate-700">
+                    <div>
+                        <div class="text-xs font-bold">قفل الخصوصية (PIN)</div>
+                        <div class="text-[10px] text-slate-400" id="pinStatusText">غير مفعل</div>
+                    </div>
+                    <button onclick="app.togglePinSetup()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-xs font-bold rounded-xl" id="btnPinToggle">إعداد الرمز</button>
+                </div>
+            </div>
+
+            <!-- Data & Backup Management -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-4">
+                <h3 class="font-bold text-sm border-b pb-2 border-slate-100 dark:border-slate-700"><i class="fa-solid fa-database text-amber-500 ml-1"></i> النسخ الاحتياطي وإدارة البيانات (JSON)</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button onclick="app.exportBackupJSON()" class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 text-right border border-slate-200 dark:border-slate-600 transition">
+                        <i class="fa-solid fa-download text-brand-500 text-lg mb-2 block"></i>
+                        <div class="text-xs font-bold">تصدير نسخة احتياطية (JSON)</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">تنزيل جميع البيانات والمواد على جهازك</div>
+                    </button>
+                    <label class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 text-right border border-slate-200 dark:border-slate-600 transition cursor-pointer">
+                        <i class="fa-solid fa-upload text-emerald-500 text-lg mb-2 block"></i>
+                        <div class="text-xs font-bold">استيراد نسخة احتياطية</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5">استرجاع بياناتك من ملف JSON سابق</div>
+                        <input type="file" id="importJsonInput" accept=".json" onchange="app.importBackupJSON(event)" class="hidden">
+                    </label>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="app.clearAllData()" class="w-full py-3 bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 rounded-2xl font-bold text-xs transition border border-red-500/20">
+                        <i class="fa-solid fa-triangle-exclamation ml-1"></i> مسح جميع البيانات بشكل نهائي
+                    </button>
+                </div>
+            </div>
+
+            <!-- About & Developer Credits -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-3xl text-center shadow-xl">
+                <div class="w-16 h-16 bg-brand-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3 text-brand-400 text-2xl font-black border border-brand-500/30">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h3 class="font-black text-lg">رفيقي الجامعي — My College Companion</h3>
+                <p class="text-xs text-slate-400 mt-1">الإصدار 2.0 (Offline-First Edition)</p>
+                <div class="my-4 py-3 border-y border-slate-700/60 text-xs">
+                    <p class="text-amber-400 font-bold mb-1">المطور والمصمم والمعماري:</p>
+                    <p class="text-base font-black text-white">المهندس / أحمد طاهر السحيقي</p>
+                </div>
+                <p class="text-[10px] text-slate-500 leading-relaxed max-w-sm mx-auto">
+                    تم بناء هذا التطبيق لخدمة الطلاب وتنظيم حياتهم الأكاديمية بالكامل محلياً بدون خوادم أو إنترنت، مع حماية تامة للخصوصية.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Floating Action Button (FAB) for Quick Audio Recording or Add Task -->
+    <div class="fixed bottom-20 left-4 z-20 flex flex-col gap-2">
+        <button onclick="app.quickRecordModal()" class="w-12 h-12 rounded-full bg-rose-600 text-white shadow-lg shadow-rose-600/40 flex items-center justify-center active:scale-90 transition hover:bg-rose-700" title="تسجيل صوتي سريع">
+            <i class="fa-solid fa-microphone text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Bottom Navigation Bar (Mobile Friendly) -->
+    <nav class="fixed bottom-0 inset-x-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 px-2 py-1 flex justify-around items-center">
+        <button onclick="app.switchTab('dashboard')" class="nav-btn p-2 flex flex-col items-center text-brand-500 font-bold text-[10px]" data-tab="dashboard">
+            <i class="fa-solid fa-house text-lg mb-0.5"></i> الرئيسية
+        </button>
+        <button onclick="app.switchTab('subjects')" class="nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]" data-tab="subjects">
+            <i class="fa-solid fa-book text-lg mb-0.5"></i> المواد
+        </button>
+        <button onclick="app.switchTab('lectures')" class="nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]" data-tab="lectures">
+            <i class="fa-solid fa-file-video text-lg mb-0.5"></i> المحاضرات
+        </button>
+        <button onclick="app.switchTab('tasks')" class="nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]" data-tab="tasks">
+            <i class="fa-solid fa-list-check text-lg mb-0.5"></i> التكاليف
+        </button>
+        <button onclick="app.switchTab('attendance')" class="nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]" data-tab="attendance">
+            <i class="fa-solid fa-user-clock text-lg mb-0.5"></i> الحضور
+        </button>
+        <button onclick="app.switchTab('grades')" class="nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]" data-tab="grades">
+            <i class="fa-solid fa-award text-lg mb-0.5"></i> الدرجات
+        </button>
+        <button onclick="app.switchTab('schedule')" class="nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]" data-tab="schedule">
+            <i class="fa-solid fa-calendar-days text-lg mb-0.5"></i> الجدول
+        </button>
+        <button onclick="app.switchTab('settings')" class="nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]" data-tab="settings">
+            <i class="fa-solid fa-gear text-lg mb-0.5"></i> الإعدادات
+        </button>
+    </nav>
+
+    <!-- MODALS CONTAINER -->
+
+    <!-- Modal 1: Add Subject -->
+    <div id="addSubjectModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-700">
+                <h3 class="font-bold text-base" id="subjectModalTitle">إضافة مادة دراسية جديدة</h3>
+                <button onclick="app.closeModal('addSubjectModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="subjectForm" onsubmit="app.saveSubject(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="subId">
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">اسم المادة *</label>
+                    <input type="text" id="subName" required placeholder="مثال: البرمجة الكائنية" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">اسم الأستاذ / المحاضر</label>
+                    <input type="text" id="subTeacher" placeholder="د. أحمد..." class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 focus:outline-none focus:border-brand-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">حد الغياب المسموح (محاضرات)</label>
+                        <input type="number" id="subMaxAbsence" value="4" min="1" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">لون المادة</label>
+                        <input type="color" id="subColor" value="#0284c7" class="w-full h-11 p-1 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 cursor-pointer">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="app.closeModal('addSubjectModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">إلغاء</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 text-white font-bold shadow-md shadow-brand-500/20">حفظ المادة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2: Add Lecture -->
+    <div id="addLectureModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-700">
+                <h3 class="font-bold text-base">إضافة محاضرة جديدة</h3>
+                <button onclick="app.closeModal('addLectureModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="lectureForm" onsubmit="app.saveLecture(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">المادة الدراسية *</label>
+                    <select id="lecSubjectId" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                        <!-- Populated -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">عنوان المحاضرة *</label>
+                    <input type="text" id="lecTitle" required placeholder="مثال: المحاضرة الأولى - مقدمة" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">تاريخ المحاضرة</label>
+                    <input type="date" id="lecDate" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">ملخص نصي / ملاحظات</label>
+                    <textarea id="lecSummary" rows="3" placeholder="اكتب النقاط الرئيسية للمحاضرة..." class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600"></textarea>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">إرفاق وسائط (صورة/فيديو/صوت/PDF)</label>
+                    <input type="file" id="lecMediaInput" multiple accept="image/*,video/*,audio/*,.pdf" class="w-full p-2 text-[11px] rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="app.closeModal('addLectureModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">إلغاء</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 text-white font-bold shadow-md shadow-brand-500/20">حفظ المحاضرة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: Add Task -->
+    <div id="addTaskModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-700">
+                <h3 class="font-bold text-base">إضافة تكليف / نشاط جديد</h3>
+                <button onclick="app.closeModal('addTaskModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="taskForm" onsubmit="app.saveTask(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">عنوان التكليف *</label>
+                    <input type="text" id="taskTitle" required placeholder="مثال: الواجب الأول - حل التمارين" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">المادة المرتبطة</label>
+                    <select id="taskSubjectId" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                        <!-- Populated -->
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">تاريخ التسليم *</label>
+                        <input type="date" id="taskDueDate" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">الأولوية</label>
+                        <select id="taskPriority" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                            <option value="high">عالية 🔥</option>
+                            <option value="medium" selected>متوسطة ⚡</option>
+                            <option value="low">منخفضة ☕</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">ملاحظات والتفاصيل</label>
+                    <textarea id="taskNotes" rows="2" placeholder="تفاصيل تسليم الشيت أو البحث..." class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="app.closeModal('addTaskModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">إلغاء</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 text-white font-bold shadow-md shadow-brand-500/20">حفظ التكليف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: Add Grade -->
+    <div id="addGradeModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-700">
+                <h3 class="font-bold text-base">إضافة تقييم / درجة اختبار</h3>
+                <button onclick="app.closeModal('addGradeModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="gradeForm" onsubmit="app.saveGrade(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">المادة الدراسية *</label>
+                    <select id="grdSubjectId" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                        <!-- Populated -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">اسم التقييم *</label>
+                    <input type="text" id="grdTitle" required placeholder="مثال: اختبار منتصف الترم (Midterm)" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">الدرجة المحصلة *</label>
+                        <input type="number" step="0.5" id="grdScore" required placeholder="18" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">الدرجة الكلية *</label>
+                        <input type="number" step="0.5" id="grdTotal" required value="20" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="app.closeModal('addGradeModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">إلغاء</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 text-white font-bold shadow-md shadow-brand-500/20">حفظ الدرجة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 5: Add Schedule Item -->
+    <div id="addScheduleModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-700">
+                <h3 class="font-bold text-base">إضافة محاضرة للجدول الأسبوعي</h3>
+                <button onclick="app.closeModal('addScheduleModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="scheduleForm" onsubmit="app.saveScheduleItem(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">المادة الدراسية *</label>
+                    <select id="schSubjectId" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                        <!-- Populated -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">اليوم *</label>
+                    <select id="schDay" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                        <option value="6">السبت</option>
+                        <option value="0">الأحد</option>
+                        <option value="1">الإثنين</option>
+                        <option value="2">الثلاثاء</option>
+                        <option value="3">الأربعاء</option>
+                        <option value="4">الخميس</option>
+                        <option value="5">الجمعة</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">وقت البدء *</label>
+                        <input type="time" id="schTimeStart" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">وقت الانتهاء</label>
+                        <input type="time" id="schTimeEnd" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">القاعة / المدرج</label>
+                    <input type="text" id="schRoom" placeholder="مثال: مدرج أ - الدور الثاني" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="app.closeModal('addScheduleModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">إلغاء</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-500 text-white font-bold shadow-md shadow-brand-500/20">حفظ بالجدول</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 6: Add Exam -->
+    <div id="addExamModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-700">
+                <h3 class="font-bold text-base">إضافة موعد امتحان جديد</h3>
+                <button onclick="app.closeModal('addExamModal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="examForm" onsubmit="app.saveExam(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">المادة الدراسية *</label>
+                    <select id="exmSubjectId" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                        <!-- Populated -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">نوع الامتحان *</label>
+                    <input type="text" id="exmTitle" required placeholder="مثال: الامتحان النهائي (Final)" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">التاريخ *</label>
+                        <input type="date" id="exmDate" required class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 font-bold">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">الوقت</label>
+                        <input type="time" id="exmTime" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">القاعة / اللجنة</label>
+                    <input type="text" id="exmHall" placeholder="مثال: قاعة الاختبارات المركزية" class="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="app.closeModal('addExamModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-bold">إلغاء</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-bold shadow-md shadow-rose-600/20">حفظ الامتحان</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 7: Global Quick Search -->
+    <div id="searchModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-start justify-center p-4 pt-16">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 border border-slate-200 dark:border-slate-700">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute right-3 top-3.5 text-slate-400"></i>
+                <input type="text" id="globalSearchInput" oninput="app.performGlobalSearch()" placeholder="بحث شامل في المحاضرات، المواد، المهام..." class="w-full pr-9 pl-3 py-3 rounded-2xl bg-slate-100 dark:bg-slate-700 border-0 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <div id="searchResults" class="max-h-60 overflow-y-auto space-y-2 text-xs divide-y divide-slate-100 dark:divide-slate-700">
+                <!-- Results rendered here -->
+            </div>
+            <div class="text-left pt-2 border-t border-slate-100 dark:border-slate-700">
+                <button onclick="app.closeModal('searchModal')" class="text-xs text-slate-400 hover:text-slate-600">إغلاق البحث</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 8: Notifications Center -->
+    <div id="notificationsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-3 border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-100 dark:border-slate-700">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-bell text-amber-500"></i> مركز التنبيهات والإشعارات
+                </h3>
+                <button onclick="app.closeModal('notificationsModal')" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="notificationsList" class="max-h-60 overflow-y-auto space-y-2 text-xs">
+                <!-- Dynamic Notifs -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION CORE (Offline-First Logic) -->
+    <script>
+        /**
+         * IndexedDB Wrapper for Media Storage (Lectures Audio/Files)
+         */
+        class MediaStorage {
+            constructor() {
+                this.dbName = 'CollegeCompanionMediaDB';
+                this.storeName = 'lectureFiles';
+                this.db = null;
+            }
+
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, 1);
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(this.storeName)) {
+                            db.createObjectStore(this.storeName, { keyPath: 'id' });
+                        }
+                    };
+                    request.onsuccess = (e) => {
+                        this.db = e.target.result;
+                        resolve(this.db);
+                    };
+                    request.onerror = (e) => reject(e);
+                });
+            }
+
+            async saveFile(fileObj) {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(this.storeName, 'readwrite');
+                    const store = tx.objectStore(this.storeName);
+                    store.put(fileObj);
+                    tx.oncomplete = () => resolve(fileObj.id);
+                    tx.onerror = (e) => reject(e);
+                });
+            }
+
+            async getFile(id) {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(this.storeName, 'readonly');
+                    const store = tx.objectStore(this.storeName);
+                    const req = store.get(id);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = (e) => reject(e);
+                });
+            }
+
+            async deleteFile(id) {
+                if (!this.db) await this.init();
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(this.storeName, 'readwrite');
+                    const store = tx.objectStore(this.storeName);
+                    store.delete(id);
+                    tx.oncomplete = () => resolve(true);
+                    tx.onerror = (e) => reject(e);
+                });
+            }
+        }
+
+        /**
+         * Main Application Controller
+         */
+        class CollegeCompanionApp {
+            constructor() {
+                this.db = new MediaStorage();
+                this.mediaRecorder = null;
+                this.audioChunks = [];
+                this.recordingStartTime = null;
+                this.recordingTimerInterval = null;
+                this.pinInput = '';
+                
+                // Initial Application State (Stored in LocalStorage)
+                this.state = {
+                    subjects: [],
+                    lectures: [],
+                    tasks: [],
+                    attendance: [],
+                    grades: [],
+                    schedule: [],
+                    exams: [],
+                    settings: {
+                        theme: 'system',
+                        pinCode: null,
+                        pinEnabled: false
+                    }
+                };
+
+                this.daysAr = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                this.taskFilter = 'all';
+            }
+
+            async init() {
+                this.loadState();
+                await this.db.init();
+                this.applyTheme();
+                this.checkPinLock();
+                this.renderAll();
+                this.setupTabListeners();
+                this.initCanvasChart();
+                this.registerServiceWorker();
+
+                // Check Notifications Permission
+                if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                    Notification.requestPermission();
+                }
+            }
+
+            loadState() {
+                const saved = localStorage.getItem('college_companion_data');
+                if (saved) {
+                    try {
+                        this.state = Object.assign(this.state, JSON.parse(saved));
+                    } catch (e) {
+                        console.error('State parse error', e);
+                    }
+                } else {
+                    // Seed initial demo subject if empty
+                    this.state.subjects = [
+                        { id: 'sub_1', name: 'البرمجة كائنية التوجه', teacher: 'د. أحمد طاهر', maxAbsence: 4, color: '#0284c7' },
+                        { id: 'sub_2', name: 'هياكل البيانات', teacher: 'د. علي', maxAbsence: 3, color: '#10b981' }
+                    ];
+                    this.saveState();
+                }
+            }
+
+            saveState() {
+                localStorage.setItem('college_companion_data', JSON.stringify(this.state));
+            }
+
+            // PIN Lock System
+            checkPinLock() {
+                if (this.state.settings.pinEnabled && this.state.settings.pinCode) {
+                    document.getElementById('pinOverlay').classList.remove('hidden');
+                }
+            }
+
+            enterPin(num) {
+                if (this.pinInput.length < 4) {
+                    this.pinInput += num;
+                    this.updatePinDots();
+                }
+                if (this.pinInput.length === 4) {
+                    if (this.pinInput === this.state.settings.pinCode) {
+                        document.getElementById('pinOverlay').classList.add('hidden');
+                        this.pinInput = '';
+                        this.updatePinDots();
+                    } else {
+                        alert('رمز PIN غير صحيح!');
+                        this.clearPin();
+                    }
+                }
+            }
+
+            clearPin() {
+                this.pinInput = '';
+                this.updatePinDots();
+            }
+
+            backspacePin() {
+                this.pinInput = this.pinInput.slice(0, -1);
+                this.updatePinDots();
+            }
+
+            updatePinDots() {
+                const dots = document.querySelectorAll('#pinDots span');
+                dots.forEach((dot, idx) => {
+                    if (idx < this.pinInput.length) {
+                        dot.className = 'w-4 h-4 rounded-full bg-brand-500 border-2 border-brand-500';
+                    } else {
+                        dot.className = 'w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 bg-transparent';
+                    }
+                });
+            }
+
+            togglePinSetup() {
+                if (this.state.settings.pinEnabled) {
+                    if (confirm('هل تريد إلغاء قفل PIN؟')) {
+                        this.state.settings.pinEnabled = false;
+                        this.state.settings.pinCode = null;
+                        this.saveState();
+                        this.updatePinStatusUI();
+                    }
+                } else {
+                    const pin = prompt('أدخل رمز PIN جديد من 4 أرقام:');
+                    if (pin && pin.length === 4 && !isNaN(pin)) {
+                        this.state.settings.pinCode = pin;
+                        this.state.settings.pinEnabled = true;
+                        this.saveState();
+                        this.updatePinStatusUI();
+                        alert('تم تفعيل قفل PIN بنجاح!');
+                    } else {
+                        alert('رمز غير صالح، يجب أن يتكون من 4 أرقام.');
+                    }
+                }
+            }
+
+            updatePinStatusUI() {
+                const txt = document.getElementById('pinStatusText');
+                const btn = document.getElementById('btnPinToggle');
+                if (this.state.settings.pinEnabled) {
+                    txt.textContent = 'مفعل برمز 4 أرقام';
+                    btn.textContent = 'إلغاء القفل';
+                } else {
+                    txt.textContent = 'غير مفعل';
+                    btn.textContent = 'إعداد الرمز';
+                }
+            }
+
+            // Theme Management
+            toggleTheme() {
+                const isDark = document.documentElement.classList.toggle('dark');
+                this.state.settings.theme = isDark ? 'dark' : 'light';
+                this.saveState();
+                this.updateThemeIcon();
+            }
+
+            applyTheme() {
+                if (this.state.settings.theme === 'dark' || (this.state.settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                this.updateThemeIcon();
+            }
+
+            updateThemeIcon() {
+                const icon = document.getElementById('themeIcon');
+                if (document.documentElement.classList.contains('dark')) {
+                    icon.className = 'fa-solid fa-sun text-amber-400 text-sm';
+                } else {
+                    icon.className = 'fa-solid fa-moon text-slate-600 text-sm';
+                }
+            }
+
+            // Tabs Switcher
+            switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+                const active = document.getElementById(`tab-${tabId}`);
+                if (active) active.classList.remove('hidden');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    if (btn.dataset.tab === tabId) {
+                        btn.className = 'nav-btn p-2 flex flex-col items-center text-brand-500 font-bold text-[10px]';
+                    } else {
+                        btn.className = 'nav-btn p-2 flex flex-col items-center text-slate-400 hover:text-slate-600 text-[10px]';
+                    }
+                });
+
+                if (tabId === 'grades') {
+                    setTimeout(() => this.drawGradesChart(), 100);
+                }
+            }
+
+            setupTabListeners() {
+                this.updatePinStatusUI();
+            }
+
+            // Render All Components
+            renderAll() {
+                this.renderDashboard();
+                this.renderSubjects();
+                this.renderLectures();
+                this.renderTasks();
+                this.renderAttendance();
+                this.renderGrades();
+                this.renderSchedule();
+                this.renderExams();
+                this.populateSubjectSelects();
+            }
+
+            populateSubjectSelects() {
+                const selects = ['lecSubjectId', 'taskSubjectId', 'grdSubjectId', 'schSubjectId', 'exmSubjectId', 'lectureSubjectFilter'];
+                selects.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    const val = el.value;
+                    let options = id === 'lectureSubjectFilter' ? '<option value="">جميع المواد</option>' : '';
+                    this.state.subjects.forEach(sub => {
+                        options += `<option value="${sub.id}">${sub.name}</option>`;
+                    });
+                    el.innerHTML = options;
+                    if (val) el.value = val;
+                });
+            }
+
+            // Dashboard Logic
+            renderDashboard() {
+                // Today Name
+                const todayIdx = new Date().getDay();
+                document.getElementById('todayDayName').textContent = this.daysAr[todayIdx];
+
+                // Calculate Attendance Rate
+                let totalAbsences = this.state.attendance.filter(a => a.status === 'absent').length;
+                let totalRecords = this.state.attendance.length;
+                let rate = totalRecords > 0 ? Math.round(((totalRecords - totalAbsences) / totalRecords) * 100) : 100;
+                document.getElementById('dashAttendanceRate').textContent = `${rate}%`;
+                document.getElementById('dashAttendanceSub').textContent = `${totalAbsences} غيابات مسجلة`;
+
+                // Pending Tasks & Early Warning (<3 Days)
+                const now = new Date().setHours(0,0,0,0);
+                let pendingCount = 0;
+                let urgentCount = 0;
+                let warnings = [];
+
+                this.state.tasks.forEach(t => {
+                    if (!t.completed) {
+                        pendingCount++;
+                        const due = new Date(t.dueDate).setHours(0,0,0,0);
+                        const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+                        if (diffDays <= 3) {
+                            urgentCount++;
+                            warnings.push(`التكليف "${t.title}" متبقي له ${diffDays < 0 ? 'انتهى موعده' : diffDays + ' أيام'}!`);
+                        }
+                    }
+                });
+
+                // Absence warnings
+                this.state.subjects.forEach(sub => {
+                    const abs = this.state.attendance.filter(a => a.subjectId === sub.id && a.status === 'absent').length;
+                    if (abs >= sub.maxAbsence) {
+                        warnings.push(`⚠️ تحذير حرمان! المادة "${sub.name}" تجاوزت الحد الأقصى للغياب (${abs}/${sub.maxAbsence})`);
+                    } else if (abs >= sub.maxAbsence - 1) {
+                        warnings.push(`⚡ إنذار مبكر: مادة "${sub.name}" متبقي لها غياب واحد فقط وتصل للحد الأقصى!`);
+                    }
+                });
+
+                document.getElementById('dashPendingTasks').textContent = pendingCount;
+                document.getElementById('dashUrgentTasks').textContent = `${urgentCount} قريبة جداً`;
+
+                // Warning Banner
+                const wBanner = document.getElementById('warningBanner');
+                const wList = document.getElementById('warningList');
+                if (warnings.length > 0) {
+                    wBanner.classList.remove('hidden');
+                    wList.innerHTML = warnings.map(w => `<li>${w}</li>`).join('');
+                } else {
+                    wBanner.classList.add('hidden');
+                }
+
+                // Next Exam Countdown
+                const sortedExams = [...this.state.exams]
+                    .filter(e => new Date(e.date) >= now)
+                    .sort((a,b) => new Date(a.date) - new Date(b.date));
+
+                if (sortedExams.length > 0) {
+                    const next = sortedExams[0];
+                    const sub = this.state.subjects.find(s => s.id === next.subjectId);
+                    const diffDays = Math.ceil((new Date(next.date) - now) / (1000 * 60 * 60 * 24));
+                    document.getElementById('dashNextExam').textContent = `${sub ? sub.name : ''} - ${next.title}`;
+                    document.getElementById('dashExamCountdown').textContent = `متبقي ${diffDays} يوم`;
+                } else {
+                    document.getElementById('dashNextExam').textContent = 'لا يوجد اختبار قريب';
+                    document.getElementById('dashExamCountdown').textContent = '--';
+                }
+
+                // GPA Score Estimation
+                let grandScore = 0;
+                let grandTotal = 0;
+                this.state.grades.forEach(g => {
+                    grandScore += parseFloat(g.score);
+                    grandTotal += parseFloat(g.total);
+                });
+                if (grandTotal > 0) {
+                    let gpaPercent = Math.round((grandScore / grandTotal) * 100);
+                    document.getElementById('dashGPA').textContent = `${gpaPercent}%`;
+                } else {
+                    document.getElementById('dashGPA').textContent = '-%';
+                }
+
+                // Render Today's Schedule
+                const todaySch = this.state.schedule.filter(s => parseInt(s.day) === todayIdx);
+                const schContainer = document.getElementById('todayScheduleList');
+                if (todaySch.length === 0) {
+                    schContainer.innerHTML = `<div class="text-xs text-slate-400 text-center py-4">لا توجد محاضرات في الجدول لهذا اليوم</div>`;
+                } else {
+                    schContainer.innerHTML = todaySch.map(sch => {
+                        const sub = this.state.subjects.find(s => s.id === sch.subjectId);
+                        return `
+                            <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-700">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-3 h-8 rounded-full" style="background-color: ${sub ? sub.color : '#0284c7'}"></div>
+                                    <div>
+                                        <h4 class="font-bold text-xs">${sub ? sub.name : 'مادة'}</h4>
+                                        <p class="text-[10px] text-slate-400"><i class="fa-solid fa-location-dot"></i> ${sch.room || 'غير محدد'}</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold font-mono bg-slate-200 dark:bg-slate-600 px-2.5 py-1 rounded-lg">${sch.timeStart}</span>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // Update Notifications Count Badge
+                const badge = document.getElementById('notifBadge');
+                if (warnings.length > 0) {
+                    badge.classList.remove('hidden');
+                    badge.textContent = warnings.length;
+                } else {
+                    badge.classList.add('hidden');
+                }
+                document.getElementById('notificationsList').innerHTML = warnings.length > 0 ?
+                    warnings.map(w => `<div class="p-2.5 rounded-xl bg-amber-500/10 text-amber-800 dark:text-amber-300 font-medium">${w}</div>`).join('') :
+                    '<div class="text-center text-slate-400 text-xs py-4">لا توجد تنبيهات حالياً</div>';
+            }
+
+            // Audio Direct Recorder (MediaRecorder API)
+            async startAudioRecording() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    this.mediaRecorder = new MediaRecorder(stream);
+                    this.audioChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) this.audioChunks.push(e.data);
+                    };
+
+                    this.mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                        const audioId = 'rec_' + Date.now();
+                        
+                        // Save audio blob directly into IndexedDB
+                        await this.db.saveFile({
+                            id: audioId,
+                            blob: audioBlob,
+                            name: `تسجيل صوتي ${new Date().toLocaleDateString('ar')}`,
+                            type: 'audio/webm'
+                        });
+
+                        // Automatically Create a Lecture with this Recording attached
+                        const subId = this.state.subjects[0]?.id || '';
+                        const newLecture = {
+                            id: 'lec_' + Date.now(),
+                            subjectId: subId,
+                            title: `تسجيل صوتي حي - ${new Date().toLocaleTimeString('ar', {hour:'2-digit', minute:'2-digit'})}`,
+                            date: new Date().toISOString().split('T')[0],
+                            summary: 'تسجيل مباشر تم إنشاؤه عبر مسجل الصوت المدمج.',
+                            mediaIds: [audioId]
+                        };
+
+                        this.state.lectures.unshift(newLecture);
+                        this.saveState();
+                        this.renderLectures();
+                        alert('تم حفظ التسجيل الصوتي وإضافته للمحاضرات بنجاح!');
+                    };
+
+                    this.mediaRecorder.start();
+                    this.recordingStartTime = Date.now();
+                    document.getElementById('btnStartRecord').classList.add('hidden');
+                    document.getElementById('btnStopRecord').classList.remove('hidden');
+                    document.getElementById('recordingStatus').classList.remove('hidden');
+                    document.getElementById('recordingTimer').classList.remove('hidden');
+
+                    this.recordingTimerInterval = setInterval(() => {
+                        const diff = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+                        const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+                        const secs = String(diff % 60).padStart(2, '0');
+                        document.getElementById('recordingTimer').textContent = `${mins}:${secs}`;
+                    }, 1000);
+
+                } catch (err) {
+                    alert('لم يتم منح إذن استخدام الميكروفون أو المتصفح لا يدعم التسجيل.');
+                    console.error(err);
+                }
+            }
+
+            stopAudioRecording() {
+                if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+                    this.mediaRecorder.stop();
+                    this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                }
+                clearInterval(this.recordingTimerInterval);
+                document.getElementById('btnStartRecord').classList.remove('hidden');
+                document.getElementById('btnStopRecord').classList.add('hidden');
+                document.getElementById('recordingStatus').classList.add('hidden');
+                document.getElementById('recordingTimer').classList.add('hidden');
+            }
+
+            quickRecordModal() {
+                this.switchTab('dashboard');
+                window.scrollTo({ top: 400, behavior: 'smooth' });
+            }
+
+            // Subjects Management
+            saveSubject(e) {
+                e.preventDefault();
+                const id = document.getElementById('subId').value || 'sub_' + Date.now();
+                const name = document.getElementById('subName').value.trim();
+                const teacher = document.getElementById('subTeacher').value.trim();
+                const maxAbsence = parseInt(document.getElementById('subMaxAbsence').value);
+                const color = document.getElementById('subColor').value;
+
+                const existingIdx = this.state.subjects.findIndex(s => s.id === id);
+                if (existingIdx > -1) {
+                    this.state.subjects[existingIdx] = { id, name, teacher, maxAbsence, color };
+                } else {
+                    this.state.subjects.push({ id, name, teacher, maxAbsence, color });
+                }
+
+                this.saveState();
+                this.renderAll();
+                this.closeModal('addSubjectModal');
+                document.getElementById('subjectForm').reset();
+            }
+
+            editSubject(id) {
+                const sub = this.state.subjects.find(s => s.id === id);
+                if (!sub) return;
+                document.getElementById('subId').value = sub.id;
+                document.getElementById('subName').value = sub.name;
+                document.getElementById('subTeacher').value = sub.teacher || '';
+                document.getElementById('subMaxAbsence').value = sub.maxAbsence;
+                document.getElementById('subColor').value = sub.color;
+                document.getElementById('subjectModalTitle').textContent = 'تعديل بيانات المادة';
+                this.openModal('addSubjectModal');
+            }
+
+            deleteSubject(id) {
+                if (confirm('هل أنت تأكد من حذف هذه المادة وجميع المحاضرات والبيانات المرتبطة بها؟')) {
+                    this.state.subjects = this.state.subjects.filter(s => s.id !== id);
+                    this.saveState();
+                    this.renderAll();
+                }
+            }
+
+            renderSubjects() {
+                const search = document.getElementById('subjectSearch').value.toLowerCase();
+                const container = document.getElementById('subjectsList');
+                const filtered = this.state.subjects.filter(s => s.name.toLowerCase().includes(search));
+
+                if (filtered.length === 0) {
+                    container.innerHTML = `<div class="col-span-2 text-center text-slate-400 text-xs py-8">لا توجد مواد مسجلة حالياً</div>`;
+                    return;
+                }
+
+                container.innerHTML = filtered.map(sub => {
+                    const lecsCount = this.state.lectures.filter(l => l.subjectId === sub.id).length;
+                    const absCount = this.state.attendance.filter(a => a.subjectId === sub.id && a.status === 'absent').length;
+                    const isDanger = absCount >= sub.maxAbsence;
+
+                    return `
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm relative overflow-hidden flex flex-col justify-between">
+                            <div class="absolute top-0 right-0 left-0 h-2" style="background-color: ${sub.color}"></div>
+                            <div>
+                                <div class="flex items-center justify-between mb-2 pt-2">
+                                    <h3 class="font-bold text-sm text-slate-900 dark:text-white">${sub.name}</h3>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="app.editSubject('${sub.id}')" class="text-slate-400 hover:text-brand-500 p-1"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+                                        <button onclick="app.deleteSubject('${sub.id}')" class="text-slate-400 hover:text-rose-500 p-1"><i class="fa-solid fa-trash text-xs"></i></button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-400 mb-4"><i class="fa-solid fa-user-tie ml-1"></i> ${sub.teacher || 'غير محدد'}</p>
+                                
+                                <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+                                    <div class="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-700/50">
+                                        <span class="text-[10px] text-slate-400 block">المحاضرات</span>
+                                        <span class="font-bold text-slate-700 dark:text-slate-200">${lecsCount} محاضرة</span>
+                                    </div>
+                                    <div class="p-2.5 rounded-2xl ${isDanger ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold' : 'bg-slate-50 dark:bg-slate-700/50'}">
+                                        <span class="text-[10px] text-slate-400 block">الغيابات</span>
+                                        <span class="font-bold">${absCount} / ${sub.maxAbsence}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Lectures Management
+            async saveLecture(e) {
+                e.preventDefault();
+                const subjectId = document.getElementById('lecSubjectId').value;
+                const title = document.getElementById('lecTitle').value.trim();
+                const date = document.getElementById('lecDate').value;
+                const summary = document.getElementById('lecSummary').value.trim();
+                const fileInput = document.getElementById('lecMediaInput');
+
+                const mediaIds = [];
+                if (fileInput.files.length > 0) {
+                    for (let file of fileInput.files) {
+                        const mediaId = 'media_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+                        await this.db.saveFile({
+                            id: mediaId,
+                            blob: file,
+                            name: file.name,
+                            type: file.type
+                        });
+                        mediaIds.push(mediaId);
+                    }
+                }
+
+                const newLec = {
+                    id: 'lec_' + Date.now(),
+                    subjectId,
+                    title,
+                    date,
+                    summary,
+                    mediaIds
+                };
+
+                this.state.lectures.unshift(newLec);
+                this.saveState();
+                this.renderLectures();
+                this.closeModal('addLectureModal');
+                document.getElementById('lectureForm').reset();
+            }
+
+            async renderLectures() {
+                const subFilter = document.getElementById('lectureSubjectFilter').value;
+                const container = document.getElementById('lecturesList');
+                let list = this.state.lectures;
+                if (subFilter) list = list.filter(l => l.subjectId === subFilter);
+
+                if (list.length === 0) {
+                    container.innerHTML = `<div class="text-center text-slate-400 text-xs py-8">لا توجد محاضرات مضافة</div>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                for (let lec of list) {
+                    const sub = this.state.subjects.find(s => s.id === lec.subjectId);
+                    
+                    // Render Attached Media Controls
+                    let mediaHTML = '';
+                    if (lec.mediaIds && lec.mediaIds.length > 0) {
+                        mediaHTML += `<div class="mt-3 space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700">`;
+                        for (let mId of lec.mediaIds) {
+                            const mediaObj = await this.db.getFile(mId);
+                            if (mediaObj) {
+                                const url = URL.createObjectURL(mediaObj.blob);
+                                if (mediaObj.type.startsWith('audio/')) {
+                                    mediaHTML += `
+                                        <div class="p-2 bg-slate-100 dark:bg-slate-700 rounded-xl space-y-1">
+                                            <div class="flex items-center justify-between text-[10px] text-slate-500 font-bold">
+                                                <span><i class="fa-solid fa-music text-rose-500"></i> ${mediaObj.name}</span>
+                                            </div>
+                                            <audio controls src="${url}" class="w-full h-8"></audio>
+                                        </div>
+                                    `;
+                                } else if (mediaObj.type.startsWith('image/')) {
+                                    mediaHTML += `<img src="${url}" class="max-h-40 rounded-xl object-cover border border-slate-200 dark:border-slate-700 my-1">`;
+                                } else {
+                                    mediaHTML += `<a href="${url}" download="${mediaObj.name}" class="inline-flex items-center gap-1 text-xs text-brand-500 underline font-bold"><i class="fa-solid fa-paperclip"></i> ${mediaObj.name}</a>`;
+                                }
+                            }
+                        }
+                        mediaHTML += `</div>`;
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-2';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full text-white" style="background-color: ${sub ? sub.color : '#0284c7'}">${sub ? sub.name : 'مادة'}</span>
+                            <span class="text-[10px] text-slate-400 font-mono">${lec.date}</span>
+                        </div>
+                        <h4 class="font-bold text-xs text-slate-800 dark:text-white">${lec.title}</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">${lec.summary || 'لا يوجد ملخص'}</p>
+                        ${mediaHTML}
+                        <div class="flex justify-end pt-2">
+                            <button onclick="app.deleteLecture('${lec.id}')" class="text-xs text-rose-500 hover:underline"><i class="fa-solid fa-trash"></i> حذف المحاضرة</button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            }
+
+            deleteLecture(id) {
+                if (confirm('هل تريد حذف هذه المحاضرة؟')) {
+                    this.state.lectures = this.state.lectures.filter(l => l.id !== id);
+                    this.saveState();
+                    this.renderLectures();
+                }
+            }
+
+            // Tasks Management
+            saveTask(e) {
+                e.preventDefault();
+                const title = document.getElementById('taskTitle').value.trim();
+                const subjectId = document.getElementById('taskSubjectId').value;
+                const dueDate = document.getElementById('taskDueDate').value;
+                const priority = document.getElementById('taskPriority').value;
+                const notes = document.getElementById('taskNotes').value.trim();
+
+                const newTask = {
+                    id: 'task_' + Date.now(),
+                    title,
+                    subjectId,
+                    dueDate,
+                    priority,
+                    notes,
+                    completed: false
+                };
+
+                this.state.tasks.push(newTask);
+                this.saveState();
+                this.renderAll();
+                this.closeModal('addTaskModal');
+                document.getElementById('taskForm').reset();
+            }
+
+            setTaskFilter(filter) {
+                this.taskFilter = filter;
+                document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                    if (btn.dataset.filter === filter) {
+                        btn.className = 'task-filter-btn px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 shadow-sm font-bold text-brand-500';
+                    } else {
+                        btn.className = 'task-filter-btn px-3 py-1.5 rounded-lg text-slate-500';
+                    }
+                });
+                this.renderTasks();
+            }
+
+            toggleTaskComplete(id) {
+                const task = this.state.tasks.find(t => t.id === id);
+                if (task) {
+                    task.completed = !task.completed;
+                    this.saveState();
+                    this.renderAll();
+                }
+            }
+
+            deleteTask(id) {
+                this.state.tasks = this.state.tasks.filter(t => t.id !== id);
+                this.saveState();
+                this.renderAll();
+            }
+
+            renderTasks() {
+                const container = document.getElementById('tasksList');
+                const now = new Date().setHours(0,0,0,0);
+
+                let filtered = this.state.tasks;
+                if (this.taskFilter === 'pending') filtered = filtered.filter(t => !t.completed);
+                if (this.taskFilter === 'completed') filtered = filtered.filter(t => t.completed);
+                if (this.taskFilter === 'urgent') {
+                    filtered = filtered.filter(t => {
+                        if (t.completed) return false;
+                        const due = new Date(t.dueDate).setHours(0,0,0,0);
+                        const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+                        return diffDays <= 3;
+                    });
+                }
+
+                if (filtered.length === 0) {
+                    container.innerHTML = `<div class="text-center text-slate-400 text-xs py-8">لا توجد تكاليف في هذه القائمة</div>`;
+                    return;
+                }
+
+                container.innerHTML = filtered.map(t => {
+                    const sub = this.state.subjects.find(s => s.id === t.subjectId);
+                    const due = new Date(t.dueDate).setHours(0,0,0,0);
+                    const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+                    const isUrgent = !t.completed && diffDays <= 3;
+
+                    return `
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl border ${isUrgent ? 'border-amber-500/50 bg-amber-500/5' : 'border-slate-100 dark:border-slate-700/60'} shadow-sm flex items-start gap-3">
+                            <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="app.toggleTaskComplete('${t.id}')" class="mt-1 w-4 h-4 rounded text-brand-500 focus:ring-brand-500 cursor-pointer">
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-xs ${t.completed ? 'line-through text-slate-400' : 'text-slate-800 dark:text-white'}">${t.title}</h4>
+                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-full ${t.priority === 'high' ? 'bg-rose-500/10 text-rose-500' : 'bg-slate-100 dark:bg-slate-700 text-slate-400'}">${t.priority}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-0.5">${t.notes || 'لا توجد ملاحظات'}</p>
+                                <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100 dark:border-slate-700 text-[10px]">
+                                    <span class="font-semibold text-slate-500">${sub ? sub.name : 'عام'}</span>
+                                    <span class="font-bold ${isUrgent ? 'text-amber-500 font-mono' : 'text-slate-400'}"><i class="fa-regular fa-clock ml-1"></i> ${t.dueDate} (${diffDays < 0 ? 'منتهي' : diffDays + ' يوم متبقي'})</span>
+                                </div>
+                            </div>
+                            <button onclick="app.deleteTask('${t.id}')" class="text-slate-300 hover:text-rose-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Attendance System
+            recordAttendance(subjectId, status) {
+                const newRecord = {
+                    id: 'att_' + Date.now(),
+                    subjectId,
+                    status, // 'present', 'absent', 'late'
+                    date: new Date().toISOString().split('T')[0]
+                };
+                this.state.attendance.push(newRecord);
+                this.saveState();
+                this.renderAll();
+            }
+
+            renderAttendance() {
+                const container = document.getElementById('attendanceSubjectsList');
+                if (this.state.subjects.length === 0) {
+                    container.innerHTML = `<div class="text-center text-slate-400 text-xs py-8">قم بإضافة مواد أولاً لتسجيل الحضور</div>`;
+                    return;
+                }
+
+                container.innerHTML = this.state.subjects.map(sub => {
+                    const subAtt = this.state.attendance.filter(a => a.subjectId === sub.id);
+                    const absCount = subAtt.filter(a => a.status === 'absent').length;
+                    const presCount = subAtt.filter(a => a.status === 'present').length;
+                    const isDanger = absCount >= sub.maxAbsence;
+
+                    return `
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border ${isDanger ? 'border-rose-500 shadow-rose-500/10' : 'border-slate-100 dark:border-slate-700/60'} shadow-sm space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full" style="background-color: ${sub.color}"></div>
+                                    <h4 class="font-bold text-xs">${sub.name}</h4>
+                                </div>
+                                <span class="text-xs font-bold ${isDanger ? 'text-rose-500' : 'text-slate-500'}">الغياب: ${absCount} / ${sub.maxAbsence}</span>
+                            </div>
+
+                            ${isDanger ? `
+                                <div class="p-2.5 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center gap-2">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> لقد وصلت للحد الأقصى للغياب في هذه المادة (حرمان)!
+                                </div>
+                            ` : ''}
+
+                            <div class="flex items-center gap-2 pt-1">
+                                <button onclick="app.recordAttendance('${sub.id}', 'present')" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold active:scale-95 transition"><i class="fa-solid fa-check ml-1"></i> حضر</button>
+                                <button onclick="app.recordAttendance('${sub.id}', 'absent')" class="flex-1 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold active:scale-95 transition"><i class="fa-solid fa-xmark ml-1"></i> غاب</button>
+                                <button onclick="app.recordAttendance('${sub.id}', 'late')" class="flex-1 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold active:scale-95 transition"><i class="fa-solid fa-clock ml-1"></i> تأخر</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            exportAttendanceReport() {
+                let csv = "المادة,الحالة,التاريخ\n";
+                this.state.attendance.forEach(a => {
+                    const sub = this.state.subjects.find(s => s.id === a.subjectId);
+                    csv += `"${sub ? sub.name : ''}","${a.status}","${a.date}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `تقرير_الحضور_${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+            }
+
+            // Grades & Assessment Logic
+            saveGrade(e) {
+                e.preventDefault();
+                const subjectId = document.getElementById('grdSubjectId').value;
+                const title = document.getElementById('grdTitle').value.trim();
+                const score = parseFloat(document.getElementById('grdScore').value);
+                const total = parseFloat(document.getElementById('grdTotal').value);
+
+                const newGrade = {
+                    id: 'grd_' + Date.now(),
+                    subjectId,
+                    title,
+                    score,
+                    total
+                };
+
+                this.state.grades.push(newGrade);
+                this.saveState();
+                this.renderAll();
+                this.closeModal('addGradeModal');
+                document.getElementById('gradeForm').reset();
+            }
+
+            deleteGrade(id) {
+                this.state.grades = this.state.grades.filter(g => g.id !== id);
+                this.saveState();
+                this.renderAll();
+            }
+
+            calculateWhatIf() {
+                const current = parseFloat(document.getElementById('whatIfCurrent').value) || 0;
+                const finalMax = parseFloat(document.getElementById('whatIfMaxFinal').value) || 0;
+                const targetPct = parseFloat(document.getElementById('whatIfTarget').value) || 0;
+
+                const grandTotal = current + finalMax;
+                const requiredGrandScore = (targetPct / 100) * grandTotal;
+                const requiredFinalScore = requiredGrandScore - current;
+
+                const resBox = document.getElementById('whatIfResult');
+                resBox.classList.remove('hidden');
+
+                if (requiredFinalScore > finalMax) {
+                    resBox.className = 'p-3 bg-rose-500/10 text-rose-600 rounded-xl text-center font-bold';
+                    resBox.textContent = `غير ممكن الوصول لـ ${targetPct}%، أقصى درجة ممكنة هي ${Math.round(((current + finalMax) / grandTotal) * 100)}%`;
+                } else if (requiredFinalScore <= 0) {
+                    resBox.className = 'p-3 bg-emerald-500/10 text-emerald-600 rounded-xl text-center font-bold';
+                    resBox.textContent = `لقد حققت بالفعل النسبة المستهدفة (${targetPct}%)!`;
+                } else {
+                    resBox.className = 'p-3 bg-brand-500/10 text-brand-600 dark:text-brand-400 rounded-xl text-center font-bold';
+                    resBox.textContent = `تحتاج الحصول على ${requiredFinalScore.toFixed(1)} من ${finalMax} في الامتحان النهائي لـ (${targetPct}%)`;
+                }
+            }
+
+            renderGrades() {
+                const container = document.getElementById('gradesList');
+                if (this.state.subjects.length === 0) {
+                    container.innerHTML = `<div class="text-center text-slate-400 text-xs py-8">لا توجد مواد مسجلة</div>`;
+                    return;
+                }
+
+                container.innerHTML = this.state.subjects.map(sub => {
+                    const subGrades = this.state.grades.filter(g => g.subjectId === sub.id);
+                    let subScoreSum = 0;
+                    let subTotalSum = 0;
+                    subGrades.forEach(g => { subScoreSum += g.score; subTotalSum += g.total; });
+                    let pct = subTotalSum > 0 ? Math.round((subScoreSum / subTotalSum) * 100) : 0;
+
+                    return `
+                        <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm space-y-3">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-xs">${sub.name}</h4>
+                                <span class="text-xs font-bold font-mono text-brand-500">${subScoreSum} / ${subTotalSum} (${pct}%)</span>
+                            </div>
+
+                            <div class="space-y-1.5 pt-1">
+                                ${subGrades.map(g => `
+                                    <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-xs">
+                                        <span class="text-slate-600 dark:text-slate-300 font-medium">${g.title}</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-mono font-bold">${g.score}/${g.total}</span>
+                                            <button onclick="app.deleteGrade('${g.id}')" class="text-slate-300 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Canvas Chart Rendering
+            initCanvasChart() {
+                window.addEventListener('resize', () => this.drawGradesChart());
+            }
+
+            drawGradesChart() {
+                const canvas = document.getElementById('gradesCanvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                
+                // Responsive Canvas Sizing
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight || 200;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (this.state.subjects.length === 0) {
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '12px Tajawal';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('لا توجد مواد لعرض الرسم البياني', canvas.width / 2, canvas.height / 2);
+                    return;
+                }
+
+                const barWidth = Math.min(40, (canvas.width / this.state.subjects.length) - 20);
+                const gap = (canvas.width - (barWidth * this.state.subjects.length)) / (this.state.subjects.length + 1);
+
+                this.state.subjects.forEach((sub, idx) => {
+                    const subGrades = this.state.grades.filter(g => g.subjectId === sub.id);
+                    let scoreSum = 0, totalSum = 0;
+                    subGrades.forEach(g => { scoreSum += g.score; totalSum += g.total; });
+                    let pct = totalSum > 0 ? (scoreSum / totalSum) : 0;
+
+                    const x = gap + idx * (barWidth + gap);
+                    const barHeight = pct * (canvas.height - 50);
+                    const y = canvas.height - 30 - barHeight;
+
+                    // Bar fill
+                    ctx.fillStyle = sub.color || '#0284c7';
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, barWidth, barHeight, [8, 8, 0, 0]);
+                    ctx.fill();
+
+                    // Percentage Text
+                    ctx.fillStyle = '#64748b';
+                    ctx.font = 'bold 10px Tajawal';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${Math.round(pct * 100)}%`, x + barWidth / 2, y - 6);
+
+                    // Subject Label
+                    ctx.fillText(sub.name.substring(0, 6) + '..', x + barWidth / 2, canvas.height - 10);
+                });
+            }
+
+            // Weekly Schedule & Exams
+            saveScheduleItem(e) {
+                e.preventDefault();
+                const subjectId = document.getElementById('schSubjectId').value;
+                const day = document.getElementById('schDay').value;
+                const timeStart = document.getElementById('schTimeStart').value;
+                const timeEnd = document.getElementById('schTimeEnd').value;
+                const room = document.getElementById('schRoom').value.trim();
+
+                const newItem = {
+                    id: 'sch_' + Date.now(),
+                    subjectId,
+                    day,
+                    timeStart,
+                    timeEnd,
+                    room
+                };
+
+                this.state.schedule.push(newItem);
+                this.saveState();
+                this.renderAll();
+                this.closeModal('addScheduleModal');
+            }
+
+            deleteScheduleItem(id) {
+                this.state.schedule = this.state.schedule.filter(s => s.id !== id);
+                this.saveState();
+                this.renderAll();
+            }
+
+            renderSchedule() {
+                const container = document.getElementById('weeklyScheduleGrid');
+                container.innerHTML = '';
+
+                // Days 6 (Sat) -> 5 (Fri)
+                const dayKeys = [6, 0, 1, 2, 3, 4, 5];
+                dayKeys.forEach(dayIdx => {
+                    const dayName = this.daysAr[dayIdx];
+                    const items = this.state.schedule.filter(s => parseInt(s.day) === dayIdx);
+
+                    const dayCol = document.createElement('div');
+                    dayCol.className = 'bg-slate-50 dark:bg-slate-700/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-700/60 space-y-2';
+                    dayCol.innerHTML = `
+                        <h4 class="font-bold text-xs border-b pb-1 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 text-center">${dayName}</h4>
+                        <div class="space-y-1.5">
+                            ${items.map(it => {
+                                const sub = this.state.subjects.find(s => s.id === it.subjectId);
+                                return `
+                                    <div class="bg-white dark:bg-slate-800 p-2 rounded-xl text-[10px] shadow-sm relative group">
+                                        <div class="font-bold text-brand-500">${sub ? sub.name : ''}</div>
+                                        <div class="text-slate-400 font-mono">${it.timeStart}</div>
+                                        <div class="text-slate-400"><i class="fa-solid fa-location-dot"></i> ${it.room || 'عام'}</div>
+                                        <button onclick="app.deleteScheduleItem('${it.id}')" class="text-rose-500 text-[10px] absolute top-1 left-1 opacity-80"><i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                    container.appendChild(dayCol);
+                });
+            }
+
+            saveExam(e) {
+                e.preventDefault();
+                const subjectId = document.getElementById('exmSubjectId').value;
+                const title = document.getElementById('exmTitle').value.trim();
+                const date = document.getElementById('exmDate').value;
+                const time = document.getElementById('exmTime').value;
+                const hall = document.getElementById('exmHall').value.trim();
+
+                const newExam = {
+                    id: 'exm_' + Date.now(),
+                    subjectId,
+                    title,
+                    date,
+                    time,
+                    hall
+                };
+
+                this.state.exams.push(newExam);
+                this.saveState();
+                this.renderAll();
+                this.closeModal('addExamModal');
+            }
+
+            deleteExam(id) {
+                this.state.exams = this.state.exams.filter(e => e.id !== id);
+                this.saveState();
+                this.renderAll();
+            }
+
+            renderExams() {
+                const container = document.getElementById('examsList');
+                if (this.state.exams.length === 0) {
+                    container.innerHTML = `<div class="col-span-2 text-center text-slate-400 text-xs py-8">لا توجد امتحانات مضافة في الجدول</div>`;
+                    return;
+                }
+
+                const now = new Date().setHours(0,0,0,0);
+                container.innerHTML = this.state.exams.map(ex => {
+                    const sub = this.state.subjects.find(s => s.id === ex.subjectId);
+                    const diffDays = Math.ceil((new Date(ex.date) - now) / (1000 * 60 * 60 * 24));
+
+                    return `
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-3xl border border-slate-100 dark:border-slate-700/60 shadow-sm flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style="background-color: ${sub ? sub.color : '#0284c7'}">${sub ? sub.name : ''}</span>
+                                <h4 class="font-bold text-xs mt-1 text-slate-800 dark:text-white">${ex.title}</h4>
+                                <p class="text-[10px] text-slate-400"><i class="fa-solid fa-clock"></i> ${ex.date} ${ex.time || ''} • ${ex.hall || 'بدون قاعة'}</p>
+                            </div>
+                            <div class="text-left">
+                                <span class="text-sm font-black text-rose-500 font-mono block">${diffDays < 0 ? 'منتهي' : diffDays + ' يوم'}</span>
+                                <button onclick="app.deleteExam('${ex.id}')" class="text-slate-300 hover:text-rose-500 text-xs mt-1"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Data Import/Export (JSON)
+            exportBackupJSON() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.state, null, 2));
+                const dlAnchor = document.createElement('a');
+                dlAnchor.setAttribute("href", dataStr);
+                dlAnchor.setAttribute("download", `رفيقي_الجامعي_نسخة_احتياطية_${new Date().toISOString().split('T')[0]}.json`);
+                document.body.appendChild(dlAnchor);
+                dlAnchor.click();
+                dlAnchor.remove();
+            }
+
+            importBackupJSON(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (confirm('هل تريد استبدال بياناتك الحالية بهذه النسخة الاحتياطية؟')) {
+                            this.state = Object.assign(this.state, imported);
+                            this.saveState();
+                            this.renderAll();
+                            alert('تم استيراد البيانات بنجاح!');
+                        }
+                    } catch (err) {
+                        alert('الملف غير صالح أو تالف.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            clearAllData() {
+                if (confirm('تنبيه هام! هل أنت متأكد من حذف جميع بياناتك نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                    localStorage.removeItem('college_companion_data');
+                    location.reload();
+                }
+            }
+
+            // Global Quick Search
+            performGlobalSearch() {
+                const query = document.getElementById('globalSearchInput').value.toLowerCase().trim();
+                const container = document.getElementById('searchResults');
+                if (!query) {
+                    container.innerHTML = `<div class="text-center text-slate-400 py-4">اكتب للبحث...</div>`;
+                    return;
+                }
+
+                let results = [];
+                // Search Subjects
+                this.state.subjects.forEach(s => {
+                    if (s.name.toLowerCase().includes(query)) results.push(`<b>مادة:</b> ${s.name}`);
+                });
+                // Search Lectures
+                this.state.lectures.forEach(l => {
+                    if (l.title.toLowerCase().includes(query) || l.summary.toLowerCase().includes(query)) results.push(`<b>محاضرة:</b> ${l.title}`);
+                });
+                // Search Tasks
+                this.state.tasks.forEach(t => {
+                    if (t.title.toLowerCase().includes(query)) results.push(`<b>تكليف:</b> ${t.title}`);
+                });
+
+                container.innerHTML = results.length > 0 ?
+                    results.map(r => `<div class="p-2 bg-slate-50 dark:bg-slate-700/50 rounded-xl">${r}</div>`).join('') :
+                    `<div class="text-center text-slate-400 py-4">لا توجد نتائج مطابقة</div>`;
+            }
+
+            // Modal Utilities
+            openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+            closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+            // PWA Service Worker Registration
+            registerServiceWorker() {
+                if ('serviceWorker' in navigator) {
+                    const swCode = `
+                        const CACHE_NAME = 'college-companion-v2';
+                        self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['/']))));
+                        self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
+                    `;
+                    const blob = new Blob([swCode], { type: 'text/javascript' });
+                    const swUrl = URL.createObjectURL(blob);
+                    navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Registration skipped'));
+                }
+            }
+        }
+
+        // Initialize App on DOM Loaded
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new CollegeCompanionApp();
+            app.init();
+        });
+    </script>
+</body>
+</html>
